@@ -1,0 +1,12 @@
+import {build} from 'vite';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {generateSnapshot} from './fotografia.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+await generateSnapshot({allowMissing:true});
+await build({root,configFile:false,publicDir:false,define:{'process.env.NODE_ENV':'"production"'},build:{outDir:'offline',emptyOutDir:true,target:'es2022',cssCodeSplit:false,lib:{entry:path.join(root,'app.jsx'),name:'SCDP',formats:['iife'],fileName:()=> 'painel.js',cssFileName:'painel'},rollupOptions:{output:{inlineDynamicImports:true}}}});
+await fs.mkdir(path.join(root,'dist/offline'),{recursive:true});
+for(const file of ['index.html','dados.js'])await fs.copyFile(path.join(root,file),path.join(root,'dist',file));
+for(const file of ['painel.js','painel.css'])await fs.copyFile(path.join(root,'offline',file),path.join(root,'dist/offline',file));
+console.log('Pronto: abra index.html por duplo clique. Nenhum servidor é necessário.');

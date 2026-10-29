@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import {fileURLToPath} from 'node:url';
+import {buildModel,financialSummary,makeTrips} from '../servicos/modelo.js';
+import {citySummary,tripItinerary} from '../servicos/itinerarios.js';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),ctx={window:{}};
+vm.runInNewContext(fs.readFileSync(path.join(root,'dados.js'),'utf8'),ctx);
+const d=buildModel(ctx.window.SCDP_DATA),trips=makeTrips(d),legs=trips.flatMap(tripItinerary);
+const audit={generatedAt:new Date().toISOString(),sources:ctx.window.SCDP_MANIFEST,counts:{...d.meta.counts,scopeTesgen:d.tesgen.length,excluded:d.meta.excluded,pcdpByUg:trips.length,people:new Set(trips.map(t=>t.personKey)).size,tripsWithTicketData:trips.filter(t=>t.bilhetes.length).length,legs:legs.length,ambiguousLegs:legs.filter(l=>!l.confirmed).length,cities:citySummary(trips).length,invalidMoney:d.meta.issues.length},financeCents:financialSummary(d.tesgen),warnings:d.meta.warnings,missingCommitments:d.meta.notFound,ambiguousItineraries:legs.filter(l=>!l.confirmed)};
+const destination=process.argv[2]||path.join(root,'auditoria_local.json');fs.writeFileSync(destination,JSON.stringify(audit,null,2)+'\n');console.log(JSON.stringify({counts:audit.counts,financeCents:audit.financeCents,warnings:audit.warnings},null,2));

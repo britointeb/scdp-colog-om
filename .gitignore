@@ -1,0 +1,23 @@
+node_modules/
+.pnpm-store/
+dist/
+.env
+.env.*
+!.env.example
+/public/dados/*
+!/public/dados/.gitkeep
+backups/
+scdp.local.json
+relatorios/
+*.log
+.DS_Store
+Thumbs.db
+# Fotografia local e ativos compilados
+/dados.js
+/dados.js.tmp
+/auditoria_local.json
+offline/
+geografia/cities15000.txt
+geografia/cities15000.zip
+geografia/mundo.geojson
+/DADOS/
