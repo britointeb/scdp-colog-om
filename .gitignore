@@ -6,6 +6,10 @@ dist/
 !.env.example
 /public/dados/*
 !/public/dados/.gitkeep
+!/public/dados/tesgen.csv
+!/public/dados/bilhetes.csv
+!/public/dados/teto_orcamentario.csv
+!/public/dados/manifesto.json
 backups/
 scdp.local.json
 relatorios/

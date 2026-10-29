@@ -202,7 +202,7 @@ function Test-PublishablePath {
     param([string]$Path)
     $name = $Path.Replace('\','/')
     if ($name -match '(^|/)(backups|node_modules|\.pnpm-store|dist|offline|relatorios)/' -or $name -match '^DADOS/' -or $name -match '(^|/)\.env($|\.)' -and $name -ne '.env.example') { return $false }
-    if ($name -in @('.gitignore','.gitattributes','.env.example','README.md','GUIA_GIT.md','THIRD_PARTY_NOTICES.md','LICENSE','LICENSE.md','INICIAR_DASH.bat','PUBLICAR_SCDP.bat','app.jsx','index.html','dev.html','painel.css','tema.css','styles.css','package.json','pnpm-lock.yaml','vite.config.js','scdp.local.example.json','assets/colog.png','public/dados/.gitkeep','geografia/cidades.json','geografia/mundo.json','geografia/LEIA_ME.md')) { return $true }
+    if ($name -in @('.gitignore','.gitattributes','.env.example','README.md','GUIA_GIT.md','THIRD_PARTY_NOTICES.md','LICENSE','LICENSE.md','INICIAR_DASH.bat','PUBLICAR_SCDP.bat','app.jsx','index.html','dev.html','painel.css','tema.css','styles.css','package.json','pnpm-lock.yaml','vite.config.js','scdp.local.example.json','assets/colog.png','public/dados/.gitkeep','public/dados/tesgen.csv','public/dados/bilhetes.csv','public/dados/teto_orcamentario.csv','public/dados/manifesto.json','geografia/cidades.json','geografia/mundo.json','geografia/LEIA_ME.md')) { return $true }
     return $name -match '^(componentes|paginas|servicos|scripts|tests)/.+\.(js|mjs|cjs|jsx|ts|tsx|css|json|md)$' -or $name -match '^\.github/.+\.(yml|yaml|md|json)$'
 }
 
@@ -213,7 +213,15 @@ function Protect-ScdpFiles {
     if (Test-Path -LiteralPath $ignoreFile) { $lines = @([IO.File]::ReadAllLines($ignoreFile)) }
     $lines = @($lines | ForEach-Object { if ($_ -eq 'dados.js') { '/dados.js' } elseif ($_ -eq 'dados.js.tmp') { '/dados.js.tmp' } else { $_ } })
     foreach ($pattern in @('/dados.js','/dados.js.tmp','/public/dados/*','!/public/dados/.gitkeep','backups/','node_modules/','.pnpm-store/','dist/','offline/','scdp.local.json','.env','.env.*','!.env.example','*.log','relatorios/','/DADOS/')) { if ($lines -notcontains $pattern) { $lines += $pattern } }
+    # Estas sao as bases consolidadas autorizadas para o painel publicado.
+    $publishedData = @('!/public/dados/tesgen.csv','!/public/dados/bilhetes.csv','!/public/dados/teto_orcamentario.csv','!/public/dados/manifesto.json')
+    $lines = @($lines | Where-Object { $_ -notin $publishedData }) + $publishedData
     [IO.File]::WriteAllLines($ignoreFile, $lines, (New-Object Text.UTF8Encoding($false)))
+    $attributesFile = Join-Path $Directory '.gitattributes'
+    $attributes = @()
+    if (Test-Path -LiteralPath $attributesFile) { $attributes = @([IO.File]::ReadAllLines($attributesFile)) }
+    if ($attributes -notcontains '/public/dados/*.csv -text') { $attributes += '/public/dados/*.csv -text' }
+    [IO.File]::WriteAllLines($attributesFile, $attributes, (New-Object Text.UTF8Encoding($false)))
     New-Item -ItemType Directory -Path (Join-Path $Directory 'public\dados') -Force | Out-Null
     $keep = Join-Path $Directory 'public\dados\.gitkeep'
     if (-not (Test-Path -LiteralPath $keep)) { [IO.File]::WriteAllText($keep, '') }
@@ -270,7 +278,7 @@ function Assert-PublishableIndex {
 function Stage-ScdpCode {
     param([string]$Git, [string]$Directory)
     Assert-PublishableIndex -Git $Git -Directory $Directory
-    $candidates = @('.gitignore','.gitattributes','.env.example','README.md','GUIA_GIT.md','THIRD_PARTY_NOTICES.md','LICENSE','LICENSE.md','INICIAR_DASH.bat','PUBLICAR_SCDP.bat','app.jsx','index.html','dev.html','painel.css','tema.css','styles.css','package.json','pnpm-lock.yaml','vite.config.js','scdp.local.example.json','assets/colog.png','public/dados/.gitkeep','geografia/cidades.json','geografia/mundo.json','geografia/LEIA_ME.md','componentes','paginas','servicos','scripts','tests','.github')
+    $candidates = @('.gitignore','.gitattributes','.env.example','README.md','GUIA_GIT.md','THIRD_PARTY_NOTICES.md','LICENSE','LICENSE.md','INICIAR_DASH.bat','PUBLICAR_SCDP.bat','app.jsx','index.html','dev.html','painel.css','tema.css','styles.css','package.json','pnpm-lock.yaml','vite.config.js','scdp.local.example.json','assets/colog.png','public/dados/.gitkeep','public/dados/tesgen.csv','public/dados/bilhetes.csv','public/dados/teto_orcamentario.csv','public/dados/manifesto.json','geografia/cidades.json','geografia/mundo.json','geografia/LEIA_ME.md','componentes','paginas','servicos','scripts','tests','.github')
     $paths = @($candidates | Where-Object { Test-Path -LiteralPath (Join-Path $Directory $_) })
     $deleted = Assert-GitOk -Git $Git -Directory $Directory -Arguments @('-c','core.quotepath=false','ls-files','--deleted')
     $paths += @($deleted -split "`n" | Where-Object { $_ -and (Test-PublishablePath $_) })
@@ -391,7 +399,7 @@ function Invoke-ScdpMain {
     Invoke-Checked -File $tools['git'] -Arguments @('push','-u','origin','HEAD:main') -Directory $project
     Write-Host 'Concluido: https://github.com/britointeb/scdp-colog-om' -ForegroundColor Green
     Write-Host "Painel local: $(Join-Path $project 'index.html')"
-    Write-Host 'As bases, backups e configuracoes locais permaneceram fora do envio.'
+    Write-Host 'As tres bases consolidadas foram publicadas. Backups e configuracoes locais permanecem no computador.'
 }
 
 try { Invoke-ScdpMain; exit 0 }

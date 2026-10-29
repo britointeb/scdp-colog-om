@@ -7,5 +7,6 @@
 *.json text eol=lf
 *.md text eol=lf
 *.yaml text eol=lf
+/public/dados/*.csv -text
 *.bat text eol=crlf
 *.ps1 text eol=crlf

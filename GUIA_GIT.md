@@ -1,6 +1,6 @@
 # GitHub e uso em vários computadores
 
-O Git sincroniza o código. As bases reais, fotografias, backups, dependências e a configuração de cada máquina permanecem fora do repositório. O botão **Carregar dados** abre a pasta do Drive; não baixa ou importa os arquivos automaticamente.
+O Git sincroniza o código e as três bases consolidadas em `public/dados/`, com seu manifesto. O painel online abre automaticamente com esses dados. Fotografias geradas, backups, dependências e a configuração de cada máquina permanecem fora do repositório.
 
 ## Publicar com um unico BAT no Windows
 
@@ -12,7 +12,7 @@ Na primeira execucao, conclua o login da conta britointeb no navegador usando o 
 
 Depois do primeiro envio, voce pode levar somente esse mesmo BAT para outro computador. Fora da pasta do painel, ele clona o repositorio para uma subpasta scdp-colog-om e prepara o projeto. Se estiver na propria pasta do painel, reutiliza essa instalacao. Os caminhos das bases podem continuar diferentes por computador, usando scdp.local.json conforme explicado abaixo.
 
-Requer Windows 10/11 de 64 bits (x64 ou ARM64), internet e autorizacao para executar programas no computador. Ferramentas preparadas pelo BAT ficam em %LOCALAPPDATA%/SCDP-Tools. O envio inclui somente os arquivos reconhecidos do codigo; bases, fotografias, configuracoes locais, dependencias e backups ficam fora. O BAT nao altera o limite de acesso do repositorio.
+Requer Windows 10/11 de 64 bits (x64 ou ARM64), internet e autorizacao para executar programas no computador. Ferramentas preparadas pelo BAT ficam em %LOCALAPPDATA%/SCDP-Tools. O envio inclui o codigo, tesgen.csv, bilhetes.csv, teto_orcamentario.csv e manifesto.json de public/dados. Fotografias geradas, configuracoes locais, dependencias e backups ficam fora. O BAT nao altera o limite de acesso do repositorio.
 
 Os comandos manuais abaixo continuam disponiveis como referencia.
 
@@ -37,7 +37,7 @@ git status --short
 git diff --cached --stat
 ```
 
-Confira os nomes dos arquivos preparados. Não devem aparecer dados.js, bases de public/dados, backups, dist, offline, node_modules ou scdp.local.json. Os arquivos scdp.local.example.json e public/dados/.gitkeep devem aparecer.
+Confira os nomes dos arquivos preparados. Devem aparecer os três CSVs e o manifesto de `public/dados/`, além do código. Não devem aparecer dados.js da raiz, backups, dist, offline, node_modules ou scdp.local.json.
 
 Substitua os marcadores abaixo pelo usuário e pelo nome reais do repositório:
 
@@ -116,13 +116,13 @@ git commit -m "Descreve a alteração feita"
 git push
 ```
 
-Finalize e envie alterações antes de mudar de computador. Se pull avisar que há alterações locais ou históricos divergentes, confira e resolva os arquivos envolvidos antes de continuar. Para atualização somente das bases, execute pnpm run update-data; não é preciso fazer commit nem recompilar o código.
+Finalize e envie alterações antes de mudar de computador. Se pull avisar que há alterações locais ou históricos divergentes, confira e resolva os arquivos envolvidos antes de continuar. Para atualizar as bases no site, execute **PUBLICAR_SCDP.bat**; ele atualiza os CSVs, cria o commit e os envia. O fluxo do Pages gera a nova fotografia automaticamente.
 
 ## Site no GitHub Pages
 
 O envio para `main` também aciona a compilação e a publicação do [site](https://britointeb.github.io/scdp-colog-om/). Acompanhe o fluxo **Publicar painel no GitHub Pages** na aba Actions. A configuração Settings → Pages deve usar **GitHub Actions** como origem. O fluxo gera `dist/pages` e publica esse pacote, incluindo os recursos compilados que ficam fora do Git.
 
-O site abre com a opção **Selecionar CSVs**. Baixe os três arquivos pela pasta do Drive aberta em **Carregar dados** e selecione-os no navegador. A importação vale para a sessão atual. As bases reais e a fotografia local não são publicadas.
+O site abre diretamente com os dados publicados, sem selecionar arquivos e sem login Google. A data exibida identifica a versão da base. Os três CSVs e o manifesto estão no repositório; a fotografia é gerada na compilação do Pages.
 
 ## Referências
 

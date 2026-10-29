@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createSnapshot} from './fotografia.mjs';
 
-export const PAGES_DATA='/* GitHub Pages: bases importadas somente na sessao do navegador. */\nwindow.SCDP_PUBLIC=true;\nwindow.SCDP_MANIFEST=null;\nwindow.SCDP_DATA=null;\n';
+const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const expected=['.nojekyll','dados.js','index.html','offline/painel.css','offline/painel.js'];
-export async function verifyPagesArtifact(root){
+export async function verifyPagesArtifact(root,{sourceRoot=projectRoot}={}){
   const files=[];
   async function walk(folder){
     for(const entry of await fs.readdir(folder,{withFileTypes:true})){
@@ -15,14 +16,15 @@ export async function verifyPagesArtifact(root){
     }
   }
   await walk(root);
-  if(files.length!==expected.length||expected.some(file=>!files.includes(file)))throw Error('O pacote do Pages deve conter somente index, inicializacao vazia e os recursos compilados.');
-  if(await fs.readFile(path.join(root,'dados.js'),'utf8')!==PAGES_DATA)throw Error('A publicacao do Pages deve iniciar sem bases reais.');
+  if(files.length!==expected.length||expected.some(file=>!files.includes(file)))throw Error('O pacote do Pages deve conter somente index, fotografia das bases e os recursos compilados.');
+  const snapshot=await createSnapshot({root:sourceRoot,hosted:true});
+  if(await fs.readFile(path.join(root,'dados.js'),'utf8')!==snapshot.body)throw Error('A fotografia do Pages nao corresponde as tres bases consolidadas.');
   const html=await fs.readFile(path.join(root,'index.html'),'utf8');
   for(const resource of ['dados.js','offline/painel.js','offline/painel.css']){
     if(!html.includes(`"./${resource}"`))throw Error(`Recurso ausente do index: ${resource}`);
     if(!(await fs.stat(path.join(root,resource))).size)throw Error(`Recurso vazio: ${resource}`);
   }
-  return {files:files.sort(),emptyData:true};
+  return {files:files.sort(),autoload:true,rows:snapshot.rows};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const root=path.resolve(process.argv[2]||'dist/pages');

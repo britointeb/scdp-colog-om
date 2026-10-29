@@ -10,7 +10,7 @@ No Windows, abra **PUBLICAR_SCDP.bat** para preparar os programas necessarios e 
 
 O [painel online](https://britointeb.github.io/scdp-colog-om/) é compilado e publicado pelo fluxo `.github/workflows/pages.yml` a cada envio para `main`. Em Settings → Pages, a origem deve ser **GitHub Actions**. O fluxo publica somente `dist/pages`, com o HTML, o JavaScript e o CSS compilados. Publicar diretamente a raiz do código deixa os recursos compilados ausentes.
 
-No site, abra **Carregar dados** para acessar a pasta do Drive e use **Selecionar CSVs** para importar TESGEN, Bilhetes e Teto Orçamentário. Os arquivos são processados no navegador e precisam ser selecionados novamente em outra sessão. O pacote público inicia sem bases reais. Para conferir essa versão localmente, execute `pnpm run build:pages` e abra `dist/pages/index.html`; essa compilação preserva a fotografia e o painel local.
+O site abre automaticamente com TESGEN, Bilhetes e Teto Orçamentário. Os três CSVs consolidados e `manifesto.json` ficam versionados em `public/dados/`. A compilação verifica os hashes e gera a fotografia com os dados; não há seleção manual de CSVs nem login Google no site. Para conferir essa versão localmente, execute `pnpm run build:pages` e abra `dist/pages/index.html`; essa compilação preserva a fotografia e o painel local.
 
 ## Cinco páginas
 
@@ -28,7 +28,7 @@ Nomes de propostos e identificadores de PCDP nas tabelas e fichas abrem as respe
 
 ## Atualizar as bases
 
-A abertura direta usa a fotografia local incluída em `dados.js`. O navegador não pode ler automaticamente as pastas de origem. O botão **Carregar dados** abre a [pasta de bases no Google Drive](https://drive.google.com/drive/folders/1aeeQPivSldOhN-XXX_DO4-jr6ZOZ0syh?usp=drive_link) em uma nova aba. O link não importa automaticamente os arquivos no navegador. A opção de selecionar os três CSVs continua disponível na recuperação de uma base ausente ou inválida e altera somente a sessão atual.
+A abertura direta usa a fotografia incluída em `dados.js`. O site usa a fotografia gerada das bases versionadas no GitHub. Execute **PUBLICAR_SCDP.bat** para atualizar as bases da origem configurada e enviá-las junto com o código; o Pages recompila o site automaticamente. A cópia local mantém o link para a [pasta de bases no Google Drive](https://drive.google.com/drive/folders/1aeeQPivSldOhN-XXX_DO4-jr6ZOZ0syh?usp=drive_link) e a importação de recuperação quando as bases locais não estão disponíveis.
 
 Para atualizar a fotografia persistente, dentro desta pasta:
 
@@ -81,7 +81,7 @@ pnpm run dev
 
 `preparar` atualiza as bases da origem configurada quando ela existe e executa a compilação. `build` compila as bases locais existentes ou uma interface vazia para importação. A compilação gera um script clássico IIFE e CSS em `offline/`, sem módulos, fetch ou workers na abertura direta. `dev` abre `/dev.html`. Os scripts de servidor/BAT antigos continuam disponíveis para compatibilidade, mas não são necessários para a consulta. Para gerar novamente o catálogo geográfico, consulte `geografia/LEIA_ME.md`.
 
-O `.gitignore` exclui bases reais, fotografia, dependências, relatórios, backups, configuração local e compilação. O projeto usa Node.js 22.13 ou superior e pnpm 11.25.0; foi validado com Node 24. `dados.js` contém dados reais das fontes e deve permanecer junto ao painel local. Licenças das bibliotecas em `THIRD_PARTY_NOTICES.md`; referências geográficas em `geografia/LEIA_ME.md`.
+O Git inclui as três bases consolidadas e seu manifesto. O `.gitignore` exclui outros arquivos de dados, fotografia gerada, dependências, relatórios, backups, configuração local e compilação. Os CSVs são preservados byte a byte pelo `.gitattributes`, mantendo os hashes entre computadores. O projeto usa Node.js 22.13 ou superior e pnpm 11.25.0; foi validado com Node 24. Licenças das bibliotecas em `THIRD_PARTY_NOTICES.md`; referências geográficas em `geografia/LEIA_ME.md`.
 
 ## Tema visual
 
