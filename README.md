@@ -6,6 +6,12 @@ Abra **index.html** por duplo clique. Não é necessário iniciar BAT, servidor,
 
 No Windows, abra **PUBLICAR_SCDP.bat** para preparar os programas necessarios e enviar o codigo para [britointeb/scdp-colog-om](https://github.com/britointeb/scdp-colog-om). O mesmo BAT pode baixar e preparar o projeto em outro computador; na primeira execucao, conclua o login do GitHub no navegador. Veja o roteiro completo em [GUIA_GIT.md](GUIA_GIT.md). Cada computador pode configurar sua própria origem em `scdp.local.json`, fora do Git. Depois de instalar as dependências, execute `pnpm run preparar`: ele atualiza as bases disponíveis e gera o index pronto para abertura direta. Sem bases, compila a interface para importar os três CSVs. Não é necessário ter Codex instalado.
 
+## GitHub Pages
+
+O [painel online](https://britointeb.github.io/scdp-colog-om/) é compilado e publicado pelo fluxo `.github/workflows/pages.yml` a cada envio para `main`. Em Settings → Pages, a origem deve ser **GitHub Actions**. O fluxo publica somente `dist/pages`, com o HTML, o JavaScript e o CSS compilados. Publicar diretamente a raiz do código deixa os recursos compilados ausentes.
+
+No site, abra **Carregar dados** para acessar a pasta do Drive e use **Selecionar CSVs** para importar TESGEN, Bilhetes e Teto Orçamentário. Os arquivos são processados no navegador e precisam ser selecionados novamente em outra sessão. O pacote público inicia sem bases reais. Para conferir essa versão localmente, execute `pnpm run build:pages` e abra `dist/pages/index.html`; essa compilação preserva a fotografia e o painel local.
+
 ## Cinco páginas
 
 1. **Viagens**: PCDPs, propostos, tipos, situações, transportes, companhias/agências, destaques gerais/nacionais/internacionais, locais, mapa e tabelas percentuais.

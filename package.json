@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --open /dev.html",
     "build": "node scripts/compilar.mjs",
+    "build:pages": "node scripts/compilar.mjs --pages",
     "preparar": "node scripts/preparar.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "start": "node scripts/iniciar.mjs",

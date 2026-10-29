@@ -118,6 +118,12 @@ git push
 
 Finalize e envie alterações antes de mudar de computador. Se pull avisar que há alterações locais ou históricos divergentes, confira e resolva os arquivos envolvidos antes de continuar. Para atualização somente das bases, execute pnpm run update-data; não é preciso fazer commit nem recompilar o código.
 
+## Site no GitHub Pages
+
+O envio para `main` também aciona a compilação e a publicação do [site](https://britointeb.github.io/scdp-colog-om/). Acompanhe o fluxo **Publicar painel no GitHub Pages** na aba Actions. A configuração Settings → Pages deve usar **GitHub Actions** como origem. O fluxo gera `dist/pages` e publica esse pacote, incluindo os recursos compilados que ficam fora do Git.
+
+O site abre com a opção **Selecionar CSVs**. Baixe os três arquivos pela pasta do Drive aberta em **Carregar dados** e selecione-os no navegador. A importação vale para a sessão atual. As bases reais e a fotografia local não são publicadas.
+
 ## Referências
 
 - [Enviar código local ao GitHub](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
